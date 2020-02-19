@@ -3,37 +3,38 @@ package naming;
 public class Dice {
 
     public static void main(String[] args) {
-        int d = 4;
-        int r = 7;
+        int dicePerRoll = 4;
+        int numberOfRolls = 7;
 
-        int[][] array = new int[r][d];
-        int[] f = new int[d * 6  - d];
+        int[][] diceArray = new int[numberOfRolls][dicePerRoll];
+        int[] frequencyOfSums = new int[dicePerRoll * 6 + 1];
 
-        int s = 0;
-        int yaht = 0;
-        for(int i = 0; i < d; i++) {
+        int diceAllTheSameCount = 0;
+        for(int i = 0; i < numberOfRolls; i++) {
+            int sumOfRoll = 0;
             System.out.print("Roll: ");
-            for(int j = 0; j < r; j++) {
-                int d2 = (int)(Math.random() * 7);
-                array[i][j] = d2;
-                s += d2;
-                System.out.print(d + " ");
+            for(int j = 0; j < dicePerRoll; j++) {
+                int dieRoll = (int)((Math.random() * 6) + 1);
+                diceArray[i][j] = dieRoll;
+                sumOfRoll += dieRoll;
+                System.out.print(dieRoll + " ");
             }
-            System.out.println(" Sum: " + s);
+            System.out.println(" Sum: " + sumOfRoll);
 
-            for(int j = 0; j < d; j++) {
-                if(array[i][j] == array[i][j+1]) {
-                    yaht++;
+            for(int j = 0; j < dicePerRoll - 1; j++) {
+                if(diceArray[i][j] == diceArray[i][j+1]) {
+                    diceAllTheSameCount++;
                 }
             }
-            f[s]++;
+            frequencyOfSums[sumOfRoll]++;
         }
-        System.out.println("There were " + yaht + " yahtzees");
+        System.out.println("There were " + diceAllTheSameCount + " yahtzees");
 
-        for(int i = 0; i < f.length; i++) {
-            System.out.println("Sum: " + i + " times: " + f[i]);
+        for(int i = dicePerRoll; i < frequencyOfSums.length; i++) {
+            System.out.println("Sum: " + i + " times: " + frequencyOfSums[i]);
         }
 
     }
 
 }
+
