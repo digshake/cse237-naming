@@ -1,4 +1,4 @@
-package naming;
+package naming.example;
 
 public class Dice {
 
