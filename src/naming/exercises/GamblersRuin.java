@@ -4,52 +4,70 @@ import java.util.Scanner;
 
 public class GamblersRuin {
 
-public static void main(String[] args) {
-		
-		Scanner in = new Scanner(System.in);
-		
-		System.out.println("Please enter the start amount: ");
-		int s = in.nextInt();
-		
-		System.out.println("Please enter the win chance: ");
-		double w = in.nextDouble();
-		
-		System.out.println("Please enter the win amount: ");
-		int w2 = in.nextInt();
-		
-		System.out.println("Please enter the number of days: ");
-		int d = in.nextInt();
-		int r = 0;
-		
-		for(int i=0; i < d; i++) {
-			int p = 0;
-			int p2 = s;
-			while (w2 > p2 && p2 > 0 ) {
-				p++;
-				double w3 = Math.random();
-				if(w3 < w) { //win
-					p2++;
+	public static void main(String[] args) {
+
+		Scanner keyboardInput = new Scanner(System.in);
+
+		int startAmount = readIntFromUser(keyboardInput, "start amount");
+
+		double chanceOfWinning = readDoubleFromUser(keyboardInput);
+		int maxWinAmount = readIntFromUser(keyboardInput, "win amount");
+		int days = readIntFromUser(keyboardInput, "number of days");
+		int totalDaysFailed = 0;
+
+		simulateExpectedValue(startAmount, chanceOfWinning, maxWinAmount, days, totalDaysFailed);
+		//expected:
+		computeExpectedValue(startAmount, chanceOfWinning, maxWinAmount);
+	}
+
+	private static void simulateExpectedValue(int startAmount, double chanceOfWinning, int maxWinAmount, int days,
+			int totalDaysFailed) {
+		for(int currentDay=0; currentDay < days; currentDay++) {
+			int numberOfPlaysToday = 0;
+			int currentAmount = startAmount;
+			while (maxWinAmount > currentAmount && currentAmount > 0 ) {
+				numberOfPlaysToday++;
+				if( playGame(chanceOfWinning)) {
+					currentAmount++;
 				} else {
-					p2--;
+					currentAmount--;
 				}
 			}
-			boolean f = p2 == 0;
-			if(f) {
-				r++;
+			boolean failedToday = currentAmount == 0;
+			if(failedToday) {
+				totalDaysFailed++;
 			}
-			System.out.println("Day " + i + ": " + p + " plays, Ruin? " + f);
+			System.out.println("Day " + currentDay + ": " + numberOfPlaysToday + " plays, Ruin? " + failedToday);
 		}
-		double rr = ((double)r) / d;
-		System.out.println("Simulated rate: " + rr);
-		//expected:
-		
-		if(w == .5) {
-			double e = 1 - (((double)s) / w2);
-			System.out.println("Expected: " + e);
+		double ruinRate = ((double)totalDaysFailed) / days;
+		System.out.println("Simulated rate: " + ruinRate);
+	}
+
+	private static void computeExpectedValue(int startAmount, double chanceOfWinning, int maxWinAmount) {
+		if(chanceOfWinning == .5) {
+			double exepectedRuinRate = 1 - (((double)startAmount) / maxWinAmount);
+			System.out.println("Expected: " + exepectedRuinRate);
 		} else {
-			double alpha = (1 - w) / w;
-			double e = (Math.pow(alpha, s) - Math.pow(alpha, w2)) / (1 - Math.pow(alpha, w2));
-			System.out.println("Expected: " + e);
+			double alpha = (1 - chanceOfWinning) / chanceOfWinning;
+			double expectedRuinRate = (Math.pow(alpha, startAmount) - Math.pow(alpha, maxWinAmount)) / (1 - Math.pow(alpha, maxWinAmount));
+			System.out.println("Expected: " + expectedRuinRate);
 		}
+	}
+
+	private static boolean playGame(double chanceOfWinning) {
+		double gameOutcome = Math.random();
+		return gameOutcome > chanceOfWinning;
+	}
+
+	private static double readDoubleFromUser(Scanner keyboardInput) {
+		System.out.println("Please enter the win chance: ");
+		double chanceOfWinning = keyboardInput.nextDouble();
+		return chanceOfWinning;
+	}
+
+	private static int readIntFromUser(Scanner keyboardInput, String prompt) {
+		System.out.println("Please enter the " + prompt + ": ");
+		int userInput = keyboardInput.nextInt();
+		return userInput;
 	}
 }
